@@ -3,7 +3,7 @@ import { TextField } from '../TextField/TextField';
 import { Movie } from '../../types/Movie';
 
 interface Props {
-  onAddMovie: (movie: Omit<Movie, 'imdbId'> & { imdbId: string }) => boolean;
+  onAdd?: (movie: Omit<Movie, 'imdbId'> & { imdbId: string }) => boolean;
 }
 
 const defaultValues = {
@@ -14,7 +14,7 @@ const defaultValues = {
   imdbId: '',
 };
 
-export const NewMovie: React.FC<Props> = ({ onAddMovie }) => {
+export const NewMovie: React.FC<Props> = ({ onAdd }) => {
   const [formValues, setFormValues] = useState(defaultValues);
   const [formKey, setFormKey] = useState(0);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -45,16 +45,18 @@ export const NewMovie: React.FC<Props> = ({ onAddMovie }) => {
       imgUrl: imgUrl.trim(),
       imdbUrl: imdbUrl.trim(),
       imdbId: imdbId.trim(),
-      ...(description.trim() && { description: description.trim() }),
+      description: description.trim(),
     };
 
-    const isAdded = onAddMovie(movie);
+    if (onAdd) {
+      const isAdded = onAdd(movie);
 
-    if (isAdded) {
-      setFormValues(defaultValues);
-      setFormKey(currentKey => currentKey + 1);
-    } else {
-      setSubmitError('Movie with this IMDb ID already exists!');
+      if (isAdded) {
+        setFormValues(defaultValues);
+        setFormKey(currentKey => currentKey + 1);
+      } else {
+        setSubmitError('Movie with this IMDb ID already exists!');
+      }
     }
   };
 
@@ -67,9 +69,9 @@ export const NewMovie: React.FC<Props> = ({ onAddMovie }) => {
       : 'Invalid URL format';
 
   const validateImdbId = (value: string) =>
-    /^tt\d{7}$/.test(value)
+    /^tt\d{7,}$/.test(value)
       ? ''
-      : 'IMDb ID must start with "tt" followed by 7 digits';
+      : 'IMDb ID must start with "tt" followed by at least 7 digits';
 
   return (
     <form className="NewMovie" key={formKey} onSubmit={handleSubmit} noValidate>
