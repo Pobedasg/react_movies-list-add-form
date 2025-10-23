@@ -10,8 +10,6 @@ export const App = () => {
 
   const addMovie = (newMovie: Omit<Movie, 'imdbId'> & { imdbId: string }) => {
     if (movies.some(movie => movie.imdbId === newMovie.imdbId)) {
-      alert('Movie with this IMDb ID already exists!');
-
       return false;
     }
 

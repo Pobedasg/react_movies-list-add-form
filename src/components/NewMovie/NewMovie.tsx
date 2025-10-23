@@ -40,12 +40,14 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
     event.preventDefault();
     setSubmitError(null);
 
+    const trimmedDescription = description.trim();
+
     const movie: Omit<Movie, 'imdbId'> & { imdbId: string } = {
       title: title.trim(),
       imgUrl: imgUrl.trim(),
       imdbUrl: imdbUrl.trim(),
       imdbId: imdbId.trim(),
-      description: description.trim(),
+      ...(trimmedDescription && { description: trimmedDescription }),
     };
 
     if (onAdd) {
